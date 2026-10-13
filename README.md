@@ -51,20 +51,20 @@ est bloqué.
 |---|---|
 | `ssh-indep.tex` | le TP, autonome (préambule inline) |
 | `minted2.sty` | variante Debian de `minted`, embarquée (licence LPPL) |
-| `LICENSE` | proposition de licence CC BY-SA 4.0 (en attente de décision) |
+| `LICENSE` | texte canonique CC BY-SA 4.0 (proposition, en attente de décision) |
+| `NOTICE` | application de la licence : ce qui est couvert, citation attendue |
 | `Makefile` | compilation locale |
 | `.github/workflows/build.yml` | vérification de compilation sur chaque PR |
 
 ## Licence
 
-**En attente de décision de l'auteur.** Une proposition CC BY-SA 4.0 est en cours
-de discussion (voir la pull request « proposition de licence » et le fichier
-`LICENSE`). Tant que cette proposition n'est pas fusionnée sur `main`, le dépôt
-est **tous droits réservés**.
+**En attente de décision de l'auteur.** Une proposition CC BY-SA 4.0 est ouverte
+en pull request (« Proposition de licence CC BY-SA 4.0 »). Tant qu'elle n'est pas
+fusionnée sur `main`, le dépôt est **tous droits réservés**.
 
-Si la proposition est acceptée, le support de cours (le `.tex` et le PDF) sera
-libre de copie, d'adaptation et de rediffusion, à condition de citer l'auteur et
-de diffuser les adaptations sous la même licence.
+Si elle est acceptée : `LICENSE` contient le texte canonique CC BY-SA 4.0 (repris
+sans modification pour être reconnu automatiquement par GitHub), et `NOTICE`
+précise ce qui est couvert, ce qui ne l'est pas, et la citation attendue.
 
 Le fichier `minted2.sty` n'est pas concerné : il garde sa propre licence LPPL
 (Geoffrey M. Poore, Konrad Rudolph).
