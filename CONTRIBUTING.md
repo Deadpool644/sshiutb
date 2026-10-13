@@ -36,6 +36,16 @@ pas compiler le document. Ne le remplacez pas par `minted` : `minted` v3 (TeXLiv
 exige en plus un exécutable `minted` (pip), absent des images CI, et son rendu diffère
 avec les options utilisées ici (`fontfamily=helvetica`, `baselinestretch`).
 
+## Licence de votre contribution
+
+La licence du support de cours est **en cours de décision** : une proposition
+CC BY-SA 4.0 est ouverte en pull request (fichier `LICENSE`). Tant qu'elle n'est
+pas fusionnée, le dépôt est tous droits réservés.
+
+En ouvrant une PR, vous acceptez que votre contribution soit intégrée au dépôt
+dans les conditions en vigueur au moment de la fusion. Si la proposition CC BY-SA
+4.0 est retenue, vos contributions seront couvertes par cette licence.
+
 ## Cycle de revue
 
 1. Vous ouvrez une PR depuis une branche de votre fork.
