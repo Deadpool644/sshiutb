@@ -479,9 +479,10 @@ sshd -T | grep -Ei 'passwordauthentication|kbdinteractiveauthentication'
 \end{bashcode}
 Le message d'erreur liste les méthodes que le serveur annonce encore. Avec seulement
 \texttt{PasswordAuthentication no}, il peut rester
-\texttt{(publickey,keyboard-interactive)} : avec PAM, l'authentification par clavier
-interactif peut encore faire passer un mot de passe. Le résultat attendu est
-\texttt{(publickey)} seul.
+\texttt{(publickey,keyboard-interactive)} : quand \texttt{UsePAM} est à \texttt{yes}
+(défaut sur Debian et Ubuntu), \texttt{keyboard-interactive} passe par PAM et le serveur
+continue d'envoyer un prompt \texttt{Password:}. Le mot de passe reste donc demandable.
+Le résultat attendu est \texttt{(publickey)} seul.
 \end{solution}
 \question Piège : faites \texttt{chmod 644} sur votre clé privée, puis essayez de vous connecter.
 Que répond le client ? Pourquoi le \emph{client} (et non le serveur) refuse-t-il ?
