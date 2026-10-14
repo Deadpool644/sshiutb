@@ -374,8 +374,6 @@ authentification par clés, tunnels, connexions par saut, multiplexage.
   \item activer le \textbf{multiplexage} \texttt{ControlMaster} et mesurer son impact ;
   \item déboguer une connexion : \texttt{-v}, \texttt{known\_hosts}, \texttt{StrictHostKeyChecking}.
 \end{itemize}
-Vous aurer besoin de deux VMs : un bastion (exposé sur le port 2222) 
-et une cible (accessible uniquement depuis le bastion).
 
 \section{Clés : bien faire les choses dès le départ}
 
@@ -384,6 +382,9 @@ la clé publique est déposée dans \texttt{\textasciitilde/.ssh/authorized\_key
 Depuis OpenSSH 6.5 (2014), l'algorithme recommandé est \textbf{Ed25519} (RFC 8032) :
 courbes elliptiques, clé de 256~bits, aussi sûre qu'une RSA 3072, plus courte, plus rapide,
 et sans paramètre à « bien choisir » comme la taille d'une RSA.
+
+\textbf{Matériel :} vous aurez besoin de deux VMs : un \textbf{bastion} (exposé sur le
+port 2222) et une \textbf{cible} (accessible uniquement depuis le bastion).
 
 \begin{questions}
 \question Générez sur votre poste une paire de clés ed25519 avec le commentaire
@@ -726,6 +727,14 @@ séparément des configs « contexte ».
 
 \section{Bastion : la connexion par saut (\texttt{ProxyJump})}
 
+\textbf{SSH Jump} (\texttt{ProxyJump}, option \texttt{-J}) permet d'accéder à un serveur
+interne en passant par un serveur de rebond, aussi appelé \textbf{bastion}. Cela évite
+d'exposer directement tous les serveurs sur le réseau externe et permet de contrôler les
+accès. Le \emph{registry}, quant à lui, est un registre privé qui stocke les images Docker :
+une fois connecté à une machine autorisée, on peut y récupérer ces images avec
+\texttt{docker pull} pour déployer les applications. Le rebond sert donc à sécuriser
+l'accès aux machines, tandis que le registry sert à distribuer les images de conteneurs.
+
 Scénario type d'entreprise : le serveur \texttt{cible} n'écoute que sur le réseau interne
 ; le \textbf{bastion} est la seule machine exposée. Objectif : \texttt{ssh cible} en une
 commande, avec la bonne clé à chaque saut, \emph{sans jamais transmettre de clé au bastion}.
@@ -812,6 +821,10 @@ Trois mécanismes, un même principe : des flux TCP \emph{embarqués} dans la co
 chiffrée. Rappels de topologie : l'hôte ne voit que le bastion (2222) ; le service 8080
 tourne sur la cible.
 
+Un tunnel n'a pas besoin d'être décidé au lancement de la session : on peut aussi
+l'ajouter ou le retirer \emph{à la demande}, sur une connexion déjà ouverte, sans la
+couper (voir la question sur le forwarding à la demande).
+
 \begin{questions}
 \question \textbf{Tunnel local} : depuis l'hôte, ouvrez
 \texttt{ssh -N -L 18080:127.0.0.1:8080 cible} et récupérez le service avec
@@ -887,6 +900,53 @@ cible, pas le tunnel (vérifiable avec \texttt{ss -ltn} sur la cible). Un écout
 \texttt{-R} doit toujours viser un port \emph{libre} sur le serveur.
 Usages typiques : exposer à distance un service qui tourne sur votre poste (Jupyter, un
 dashboard, un outil de debug), ou recevoir le trafic d'un serveur qui ne peut pas sortir.
+\end{solution}
+\question \textbf{Forwarding à la demande} : vous êtes connecté avec un simple
+\texttt{ssh cible} (aucun \texttt{-L}) et vous réalisez que vous avez besoin du service
+8080 de la cible. \emph{Sans quitter la session}, ajoutez le tunnel
+\texttt{18080:127.0.0.1:8080}, testez-le, puis retirez-le. Deux méthodes : la ligne de
+commande d'échappement \texttt{\textasciitilde C} et le multiplexage
+(\texttt{ssh -O forward}). Pourquoi ne pas simplement relancer \texttt{ssh -L} ?
+\begin{solution}
+Méthode 1 : la ligne de commande d'échappement, dans la session interactive.
+\begin{bashcode}
+ssh -o EnableEscapeCommandline=yes cible
+# [Entrée] puis ~C : l'invite « ssh> » apparaît
+ssh> -L 18080:127.0.0.1:8080
+Forwarding port.
+# depuis un autre terminal de l'hôte :
+curl 127.0.0.1:18080
+# retrait à chaud : [Entrée], ~C puis
+ssh> -KL18080
+\end{bashcode}
+Le \texttt{\textasciitilde} n'est interprété qu'\emph{en début de ligne} (juste après
+Entrée) ; \texttt{\textasciitilde ?} liste les séquences disponibles et
+\texttt{\textasciitilde \#} les tunnels actifs. Depuis OpenSSH 9.2, la ligne de commande
+\texttt{\textasciitilde C} est \emph{désactivée par défaut} (message
+\texttt{commandline disabled}) : il faut \texttt{EnableEscapeCommandline yes} dans la
+config ou \texttt{-o} comme ci-dessus.
+
+Méthode 2 : demander au \emph{maître} multiplexé (\texttt{ControlMaster auto} du
+\texttt{Host *}), depuis n'importe quel autre terminal.
+\begin{bashcode}
+ssh cible                      # session ouverte : elle est le maître
+# dans un second terminal :
+ssh -O forward -L 18080:127.0.0.1:8080 cible
+ss -ltnp | grep 18080          # le maître ssh écoute sur 127.0.0.1:18080
+curl 127.0.0.1:18080
+ssh -O cancel -L 18080:127.0.0.1:8080 cible   # retire ce tunnel, le maître reste
+\end{bashcode}
+\texttt{-O forward} accepte aussi \texttt{-R} et \texttt{-D} ; \texttt{-O cancel} avec
+l'option du tunnel ne retire que celui-ci, alors que \texttt{-O exit} arrête le maître.
+La règle de lecture ne change pas : avec \texttt{-L}, \texttt{hote:port} est interprété
+côté \emph{cible}. Si aucun maître n'existe, la commande échoue avec
+\texttt{Control socket ... No such file or directory}.
+
+Relancer \texttt{ssh -L} obligerait à fermer la session en cours (shell, éditeur, commande
+longue perdus) et à se ré-authentifier à travers le bastion. Différence de durée de vie :
+un tunnel ajouté par \texttt{\textasciitilde C} disparaît avec la session, alors qu'un
+tunnel ajouté par \texttt{-O forward} appartient au maître et survit tant que celui-ci
+vit (\texttt{ControlPersist 10m}).
 \end{solution}
 \question Côté serveur, quelles options \texttt{sshd\_config} gouvernent ces tunnels
 (\texttt{AllowTcpForwarding}, \texttt{GatewayPorts}) ? Que bloque
@@ -1321,6 +1381,7 @@ Host lab
 \texttt{-L port:hôte:port} & tunnel local (hôte résolu \emph{du côté serveur}) \\
 \texttt{-R port:hôte:port} & tunnel distant (écouteur \emph{sur} le serveur) \\
 \texttt{-D port} & proxy SOCKS5 dynamique \\
+\texttt{\textasciitilde C} puis \texttt{-L ...} / \texttt{ssh -O forward -L ...} & ajoute un tunnel à chaud, sans relancer la session \\
 \texttt{ssh -G hôte} & affiche la config résolue (debug) \\
 \texttt{ssh -O check|cancel} & état / arrêt du maître multiplexé \\
 \texttt{ControlMaster auto} & multiplexage sur socket UNIX \\
