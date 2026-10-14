@@ -730,10 +730,8 @@ séparément des configs « contexte ».
 \textbf{SSH Jump} (\texttt{ProxyJump}, option \texttt{-J}) permet d'accéder à un serveur
 interne en passant par un serveur de rebond, aussi appelé \textbf{bastion}. Cela évite
 d'exposer directement tous les serveurs sur le réseau externe et permet de contrôler les
-accès. Le \emph{registry}, quant à lui, est un registre privé qui stocke les images Docker :
-une fois connecté à une machine autorisée, on peut y récupérer ces images avec
-\texttt{docker pull} pour déployer les applications. Le rebond sert donc à sécuriser
-l'accès aux machines, tandis que le registry sert à distribuer les images de conteneurs.
+accès. Le bastion est donc le seul point d'entrée : il sécurise l'accès aux machines
+internes sans les exposer elles-mêmes.
 
 Scénario type d'entreprise : le serveur \texttt{cible} n'écoute que sur le réseau interne
 ; le \textbf{bastion} est la seule machine exposée. Objectif : \texttt{ssh cible} en une
