@@ -139,6 +139,21 @@ pour l'auteur (un merge rouge est impossible, même en administrateur). Le dép�
 un historique linéaire, donc **les merge commits sont interdits** : la fusion se fait en
 squash ou en rebase (`gh pr merge --squash`).
 
+## Premier contributeur : la CI démarre en attente
+
+GitHub ne lance pas les workflows à l'aveugle pour un contributeur qui n'a jamais
+contribué au dépôt. À l'ouverture de votre **première** PR, le check `compile (LaTeX)`
+apparaît en attente d'approbation (`action_required`) : le bouton *Review pending
+changes* est visible sur la page du run.
+
+Ce n'est pas une panne et ce n'est pas un refus. Il faut qu'un membre du dépôt
+approuve l'exécution. Concrètement : **commentez votre PR** en demandant le lancement
+de la CI, l'auteur approuve, et le run démarre. Une fois votre première contribution
+fusionnée, vos PR suivantes compilent sans cette étape.
+
+Si vous voyez `pending` sans jamais passer à `pass`, c'est presque toujours cet
+attente : dites-le plutôt que de pousser des commits en plus.
+
 ## Style
 
 - Le document est en français.
