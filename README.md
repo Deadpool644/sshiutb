@@ -38,12 +38,22 @@ sudo apt install latexmk texlive-latex-base texlive-latex-recommended \
 
 ## Contribuer
 
-Le dépôt accepte les pull requests. Voir [CONTRIBUTING.md](CONTRIBUTING.md).
+Ce TP est amélioré par ceux qui le font. Le principe :
+**une idée se signale par une issue, une issue se règle par une petite pull request.**
+
+1. Ouvrir une issue (trois modèles : signaler une commande erronée, proposer une
+   question, demander une clarification).
+2. Attendre un feu vert en commentaire.
+3. Ouvrir une PR petite : une intention, une section.
+4. Relire le PDF produit par la CI (artifact `ssh-indep-pdf`), pas seulement le diff.
+
+Pour commencer : [issues label `bonne-premiere-PR`](https://github.com/pushou/sshiutb/labels/bonne-premiere-PR).
+Le détail complet est dans [CONTRIBUTING.md](CONTRIBUTING.md).
 
 **Une PR ne peut être fusionnée que si la compilation LaTeX réussit** : le check
-`compile` de la CI GitHub Actions est obligatoire sur la branche `main`. S'il est rouge
-(erreur LaTeX, PDF absent ou vide, dépendance externe introduite), le bouton de merge
-est bloqué.
+`compile (LaTeX)` de la CI GitHub Actions est obligatoire sur la branche `main`. S'il est
+rouge (erreur LaTeX, PDF absent ou vide, dépendance externe introduite), le bouton de
+merge est bloqué.
 
 ## Contenu
 
@@ -53,8 +63,12 @@ est bloqué.
 | `minted2.sty` | variante Debian de `minted`, embarquée (licence LPPL) |
 | `LICENSE` | texte canonique CC BY-SA 4.0 (proposition, en attente de décision) |
 | `NOTICE` | application de la licence : ce qui est couvert, citation attendue |
-| `Makefile` | compilation locale |
+| `Makefile` | compilation locale (`make`, `make check`, `make test-autonomie`) |
+| `tools/check-fls.sh` | preuve d'autonomie : aucun fichier lu hors du dépôt |
+| `tools/test-autonomie.sh` | test du garde-fou d'autonomie |
 | `.github/workflows/build.yml` | vérification de compilation sur chaque PR |
+| `.github/ISSUE_TEMPLATE/` | modèles d'issues pour les contributions |
+| `.github/pull_request_template.md` | cadre d'une pull request |
 
 ## Licence
 

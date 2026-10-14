@@ -1,59 +1,127 @@
 # Contribuer
 
-Les contributions sont les bienvenues : coquilles, précisions techniques, nouvelles
-questions, corrections d'exemples de commandes.
+Ce TP est écrit **en commun** : les étudiants qui le font sont censés l'améliorer.
+Une commande mal écrite, un piège oublié, une explication obscure : ce sont des
+contributions légitimes.
 
-## Ce qui est attendu
+Le principe qui organise tout : **une idée se signale par une issue, une issue se
+règle par une petite pull request.**
 
-1. **Le document doit rester autonome.** N'ajoutez pas de `\input{...}` ou
-   `\include{...}` vers un fichier hors du dépôt : `ssh-indep.tex` doit se compiler seul.
-   La CI vérifie ce point.
-2. **Le document doit compiler.** Toute PR déclenche la compilation ; si elle échoue,
-   la fusion est bloquée.
-3. **Une modification par PR, une intention claire.** Décrivez dans la PR ce que vous
-   changez et pourquoi (une commande SSH erronée, une explication ambiguë, un cas
-   manquant).
-4. **Vérifiez techniquement ce que vous avancez.** Les commandes de ce TP sont exécutables :
-   testez-les sur deux VMs (un bastion exposé sur 2222, une cible en réseau interne)
-   avant de proposer une correction.
+## Le cycle en quatre étapes
+
+1. **Ouvrir une issue.** Vous avez repéré quelque chose ? Décrivez-le, sans corriger
+   quoi que ce soit. Les trois modèles disponibles (bouton *New issue*) :
+   * *Signaler une commande erronée*
+   * *Proposer une question*
+   * *Demander une clarification*
+
+   Une issue porte une **intention**, pas un diff. Elle sert à se mettre d'accord sur
+   le problème avant d'écrire du LaTeX.
+
+2. **Attendre un feu vert.** L'auteur (ou un autre étudiant) commente, valide, ou
+   propose une autre formulation. Le label passe à `bonne-premiere-PR` si la tâche est
+   accessible.
+
+3. **Ouvrir une PR.** Une seule intention, une seule section. La PR est compilée par
+   la CI ; si la compilation échoue, elle ne peut pas être fusionnée.
+
+4. **Relire le PDF de la CI, pas le diff.** Chaque run publie un artifact
+   `ssh-indep-pdf`. Ouvrez-le à la page concernée : un diff LaTeX ne montre ni une
+   page cassée, ni un tableau débordé, ni une commande coupée en deux.
+
+## Les labels
+
+| Label | Sens |
+|---|---|
+| `correction-commande` | une commande du TP est fausse, incomplète ou dangereuse |
+| `nouvelle-question` | ajouter une question ou un exercice |
+| `piege-a-documenter` | un comportement contre-intuitif de SSH mérite une explication |
+| `precision-redaction` | clarifier une phrase, corriger une coquille |
+| `cheatsheet` | compléter le mémo final |
+| `bonne-premiere-PR` | tâche accessible pour une première contribution |
+| `a-verifier-sur-terrain` | la proposition doit être testée sur bastion + cible |
+
+Cherchez une issue avec `bonne-premiere-PR` pour commencer :
+<https://github.com/pushou/sshiutb/labels/bonne-premiere-PR>
+
+## Comment fork et envoyer une PR
+
+```bash
+# 1. sur github.com : bouton "Fork" vers votre compte, puis
+git clone https://github.com/VOTRE-COMPTE/sshiutb.git
+cd sshiutb
+
+# 2. une branche par intention
+git checkout -b corriger-tunnel-distant
+
+# 3. modifier, puis compiler localement
+make check          # compilation + preuve d'autonomie
+
+# 4. pousser et ouvrir la PR depuis la branche
+git push -u origin corriger-tunnel-distant
+```
+
+Une PR doit rester **petite** : une question ajoutée, une commande corrigée, une
+phrase clarifiée. Une PR qui réécrit trois sections est refusée non par principe mais
+parce qu'elle est illisible en revue.
+
+## Les deux règles non négociables
+
+### 1. Ne proposez pas une commande que vous n'avez pas exécutée
+
+Le TP est un document d'exécution : tout ce qu'il affirme doit avoir été observé.
+Dans la PR, collez les commandes réellement lancées sur les deux VMs (bastion exposé
+sur 2222, cible en réseau interne) et leur sortie. Une correction « d'après moi »
+n'est pas une correction.
+
+### 2. Le document doit rester autonome
+
+`ssh-indep.tex` et les fichiers qu'il lit doivent être **dans le dépôt**. Aucune
+dépendance vers un fichier extérieur, même proche, même sur votre machine.
+
+La CI ne se contente pas de lire le source : elle classe **chaque fichier réellement
+ouvert pendant la compilation** (le *file* de latexmk, `ssh-indep.fls`) et refuse tout
+chemin qui n'est ni dans le dépôt ni dans un arbre TeX installé par le système. Ce
+contrôle attrape les dépendances invisibles au grep sur le `.tex`, par exemple une
+image atteinte via `\graphicspath{{/chemin/hors/depot/}}` ou `\graphicspath{{../outside/}}`.
+
+Les arbres TeX personnels (`~/texmf`) sont volontairement exclus : un fichier qui
+n'existe que sur une machine est précisément ce que l'autonomie interdit.
+
+Le garde-fou est lui-même testé :
+
+```bash
+make test-autonomie
+```
 
 ## Avant d'ouvrir la PR
 
 ```bash
-latexmk -pdf -shell-escape ssh-indep.tex
+make check
 ```
 
-Le PDF doit être produit sans erreur. Les avertissements `multiply defined` sur les
-labels de questions sont connus et acceptés (effets de `\printanswers` /
-`\noprintanswers`).
+Le PDF doit être produit sans erreur, et l'autonomie vérifiée. Les avertissements
+`multiply defined` sur les labels de questions sont connus et acceptés (effets de
+`\printanswers` / `\noprintanswers`).
 
 ## Ne pas supprimer `minted2.sty`
 
 `minted2.sty` est une variante Debian de `minted` : elle n'existe ni dans TeXLive amont
 ni dans Ubuntu. Elle est donc versionnée à la racine du dépôt (licence LPPL, voir son
 en-tête) et LaTeX la charge depuis le dossier courant. Sans elle, la CI Ubuntu ne peut
-pas compiler le document. Ne le remplacez pas par `minted` : `minted` v3 (TeXLive amont)
+pas compiler le document. Ne la remplacez pas par `minted` : `minted` v3 (TeXLive amont)
 exige en plus un exécutable `minted` (pip), absent des images CI, et son rendu diffère
 avec les options utilisées ici (`fontfamily=helvetica`, `baselinestretch`).
 
 ## Licence de votre contribution
 
 La licence du support de cours est **en cours de décision** : une proposition
-CC BY-SA 4.0 est ouverte en pull request (`LICENSE` + `NOTICE`). Tant qu'elle
-n'est pas fusionnée, le dépôt est tous droits réservés.
+CC BY-SA 4.0 est ouverte (`LICENSE` + `NOTICE`). Tant qu'elle n'est pas fusionnée,
+le dépôt est tous droits réservés.
 
 En ouvrant une PR, vous acceptez que votre contribution soit intégrée au dépôt
 dans les conditions en vigueur au moment de la fusion. Si la proposition CC BY-SA
 4.0 est retenue, vos contributions seront couvertes par cette licence.
-
-## Cycle de revue
-
-1. Vous ouvrez une PR depuis une branche de votre fork.
-2. La CI compile le document et publie le PDF en artifact : téléchargez-le pour relire
-   le rendu, pas seulement le diff.
-3. Le check `compile` doit être vert.
-4. L'auteur relit, demande des changements éventuellement, puis fusionne.
-
 ## Ce que vérifie la CI
 
 Quatre contrôles, tous bloquants :
@@ -62,20 +130,7 @@ Quatre contrôles, tous bloquants :
 2. Le source ne contient aucun `\input`, `\include`, `\import` ou `\subfile`
    (les lignes de commentaire sont ignorées, `\includegraphics` n'est pas concernée).
 3. Le document compile sans erreur fatale et produit un PDF non vide.
-4. Aucun fichier lu pendant la compilation ne sort du dépôt : la CI inspecte le
-   *file* de latexmk (`ssh-indep.fls`) classe chaque entrée `INPUT` et rejette
-   tout chemin qui n'est ni dans le dépôt ni dans un arbre TeX installé par le
-   système. Ce contrôle attrape les dépendances invisibles au grep sur le source,
-   par exemple une image atteinte via `\graphicspath{{/chemin/hors/depot/}}`
-   (chemin absolu) ou `\graphicspath{{../outside/}}` (chemin relatif).
-   Les arbres TeX personnels (`~/texmf`) sont volontairement exclus : un fichier
-   qui n'existe que sur une machine est précisément ce que l'autonomie interdit.
-
-Le garde-fou lui-même est testé : `make test-autonomie` compile deux documents
-piégés (image par chemin absolu, `\input` absolu) et vérifie qu'ils sont bien
-rejetés, en plus d'accepter le document normal.
-
-`make check` exécute localement exactement les mêmes contrôles.
+4. Aucun fichier lu pendant la compilation ne sort du dépôt (voir plus haut).
 
 ## Fusion
 
@@ -90,3 +145,5 @@ squash ou en rebase (`gh pr merge --squash`).
 - Les blocs de commandes utilisent l'environnement `bashcode` (minted) ; les réponses
   sont dans `\begin{solution}...\end{solution}` pour rester masquables.
 - Les questions sont dans l'environnement `questions` avec `\question`.
+- Une question doit être **vérifiable par une commande** : on doit pouvoir prouver la
+  réponse en exécutant quelque chose sur les deux VMs.
