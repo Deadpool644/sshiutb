@@ -115,13 +115,13 @@ avec les options utilisées ici (`fontfamily=helvetica`, `baselinestretch`).
 
 ## Licence de votre contribution
 
-La licence du support de cours est **en cours de décision** : une proposition
-CC BY-SA 4.0 est ouverte (`LICENSE` + `NOTICE`). Tant qu'elle n'est pas fusionnée,
-le dépôt est tous droits réservés.
+Le support de cours est sous **CC BY-SA 4.0** (voir `LICENSE` et `NOTICE`).
 
-En ouvrant une PR, vous acceptez que votre contribution soit intégrée au dépôt
-dans les conditions en vigueur au moment de la fusion. Si la proposition CC BY-SA
-4.0 est retenue, vos contributions seront couvertes par cette licence.
+En ouvrant une PR, vous acceptez que votre contribution soit intégrée au dépôt sous
+cette licence : elle sera redistribuée avec le document, créditée, et ses dérivés
+devront rester sous la même licence. `minted2.sty` reste sous LPPL et n'est pas
+concerné par vos contributions.
+
 ## Ce que vérifie la CI
 
 Quatre contrôles, tous bloquants :

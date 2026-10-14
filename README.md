@@ -61,7 +61,7 @@ merge est bloqué.
 |---|---|
 | `ssh-indep.tex` | le TP, autonome (préambule inline) |
 | `minted2.sty` | variante Debian de `minted`, embarquée (licence LPPL) |
-| `LICENSE` | texte canonique CC BY-SA 4.0 (proposition, en attente de décision) |
+| `LICENSE` | texte canonique CC BY-SA 4.0 |
 | `NOTICE` | application de la licence : ce qui est couvert, citation attendue |
 | `Makefile` | compilation locale (`make`, `make check`, `make test-autonomie`) |
 | `tools/check-fls.sh` | preuve d'autonomie : aucun fichier lu hors du dépôt |
@@ -72,13 +72,15 @@ merge est bloqué.
 
 ## Licence
 
-**En attente de décision de l'auteur.** Une proposition CC BY-SA 4.0 est ouverte
-en pull request (« Proposition de licence CC BY-SA 4.0 »). Tant qu'elle n'est pas
-fusionnée sur `main`, le dépôt est **tous droits réservés**.
+**CC BY-SA 4.0** (Creative Commons Attribution - Partage dans les Mêmes Conditions 4.0
+International), décidée par l'auteur.
 
-Si elle est acceptée : `LICENSE` contient le texte canonique CC BY-SA 4.0 (repris
-sans modification pour être reconnu automatiquement par GitHub), et `NOTICE`
-précise ce qui est couvert, ce qui ne l'est pas, et la citation attendue.
+`LICENSE` contient le texte canonique CC BY-SA 4.0, repris sans modification pour être
+reconnu automatiquement par GitHub. `NOTICE` précise ce qui est couvert, ce qui ne
+l'est pas, et la citation attendue.
+
+Vous pouvez copier, redistribuer, adapter ce support de cours, y compris commercialement,
+à condition de créditer l'auteur et de diffuser vos adaptations sous la même licence.
 
 Le fichier `minted2.sty` n'est pas concerné : il garde sa propre licence LPPL
 (Geoffrey M. Poore, Konrad Rudolph).
